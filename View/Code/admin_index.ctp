@@ -26,6 +26,7 @@
                     <tr>
                         <th><?= $Lang->get("CCADEAU__TH_CODE"); ?></th>
                         <th><?= $Lang->get("CCADEAU__TH_ETAT"); ?></th>
+                        <th><?= $Lang->get("CCADEAU__TH_USER"); ?></th>
                     </tr>
                     <?php $i = 0; ?>
                     <?php foreach ($codes as $code) { ?>
@@ -46,6 +47,7 @@
                             }
                             ?>
                         </td>
+                        <td><?php echo isset($code['Code']['pseudo'])?$code['Code']['pseudo']:'';?></td>
                         <td>
                             <td>
                             <form class="form-horizontal" method="POST" data-ajax="true" action="<?= $this->Html->url(array('controller' => 'Code', 'action' => 'delete_code')) ?>" data-redirect-url="?">

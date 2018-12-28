@@ -18,5 +18,6 @@
 	"CCADEAU__CLAIM_BTN":"Continuer",
 	"CCADEAU__SUCCESS_CLAIM_1":"Vous venez de reçevoir ",
 	"CCADEAU__SUCCESS_CLAIM_2":" points boutique",
-	"CCADEAU__DELETE_BTN":" Supprimer"
+	"CCADEAU__DELETE_BTN":" Supprimer",
+	"CCADEAU__TH_USER":"Utilisateur"
 }
