@@ -1,18 +1,14 @@
 <?php
 
-class CodecadeauAppSchema extends CakeSchema
-{
+class CodecadeauAppSchema extends CakeSchema {
 
     public $file = 'schema.php';
 
-    public function before($event = array())
-    {
+    public function before($event = array()) {
         return true;
     }
 
-    public function after($event = array())
-    {
-    }
+    public function after($event = array()) {}
 
     public $codecadeau__code = array(
         'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
