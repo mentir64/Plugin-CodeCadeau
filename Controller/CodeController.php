@@ -49,7 +49,7 @@ class CodeController extends AppController {
             $this->set('codes', $newCodes);
         }
         else
-            throw new ForbiddenException();
+          throw new ForbiddenException();
     }
 
     public function admin_add_code(){
@@ -87,7 +87,7 @@ class CodeController extends AppController {
             }
         }
         else
-            throw new ForbiddenException();
+          throw new ForbiddenException();
     }
 
     public function claim_code(){
@@ -135,7 +135,7 @@ class CodeController extends AppController {
             }
         }
         else
-            throw new ForbiddenException();
+          throw new ForbiddenException();
     }
 
     public function admin_delete_code()
@@ -154,7 +154,6 @@ class CodeController extends AppController {
             }
         }
         else
-            throw new ForbiddenException();
+          throw new ForbiddenException();
     }
-
 }
