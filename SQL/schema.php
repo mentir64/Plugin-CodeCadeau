@@ -19,6 +19,6 @@ class CodecadeauAppSchema extends CakeSchema
         'code' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
         'use' => array('type' => 'string', 'null' => false, 'default' => '0', 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
         'point' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 11, 'unsigned' => false),
-        'utilisateur_id' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 11, 'unsigned' => false)
+        'user_id' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 11, 'unsigned' => false)
     );
 }

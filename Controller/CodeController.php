@@ -1,16 +1,12 @@
 <?php
+class CodeController extends AppController {
 
-class CodeController extends AppController
-{
-
-    public function index()
-    {
+    public function index(){
         $this->set('title_for_layout', $this->Lang->get('CCADEAU__TITLE'));
     }
 
-    public function admin_index()
-    {
-        if ($this->isConnected AND $this->User->isAdmin()) {
+    public function admin_index(){
+        if($this->isConnected AND $this->User->isAdmin()){
             $this->set('title_for_layout', $this->Lang->get('CCADEAU__TITLE'));
             $this->layout = 'admin';
             $codes = $this->Code->find('all');
@@ -34,51 +30,51 @@ class CodeController extends AppController
             #if($version_install != $version_up){
             #   $isUpdateAvaible = true;
             #}
-            $this->set(compact('isUpdateAvaible'));
 
             $newCodes = array();
             foreach ($codes as $code) {
-                if ($code['Code']['utilisateur_id'] != 0 && $code['Code']['utilisateur_id'] != null) {
-                    $utilisateur = $this->User->find('first', array(
+                if ($code['Code']['user_id'] != 0 && $code['Code']['user_id'] != null) {
+                    $user = $this->User->find('first', array(
                         'fields' => 'pseudo',
                         'conditions' => array(
-                            'id' => $code['Code']['utilisateur_id']
+                            'id' => $code['Code']['user_id']
                         ),
                     ));
-                    $code['Code']['pseudo'] = $utilisateur['User']['pseudo'];
+                    $code['Code']['pseudo'] = $user['User']['pseudo'];
                 }
                 $newCodes[] = $code;
             }
 
-            $this->set(compact("codes"));
+            $this->set(compact('isUpdateAvaible'));
             $this->set('codes', $newCodes);
-        } else
+        }
+        else
             throw new ForbiddenException();
     }
 
-    public function admin_add_code()
-    {
+    public function admin_add_code(){
         $this->layout = 'admin';
         $this->autoRender = false;
-        if ($this->isConnected && $this->User->isAdmin()) {
-            if ($this->request->is('post')) {
+        if($this->isConnected && $this->User->isAdmin()){
+            if($this->request->is('post')) {
                 $code_cadeau = $this->request->data['code_cadeau'];
                 $point_cadeau = $this->request->data['point_cadeau'];
-                if (!isset($code_cadeau) && empty($code_cadeau)) {
-                    $errors .= $this->Lang->get('CCADEAU__ERROR_INPUT_NAME_CODE') . " <br/>";
+                if(!isset($code_cadeau) && empty($code_cadeau)){
+                    $errors .= $this->Lang->get('CCADEAU__ERROR_INPUT_NAME_CODE')." <br/>";
                 }
-                if (!isset($point_cadeau) && empty($point_cadeau)) {
-                    $errors .= $this->Lang->get('CCADEAU__ERROR_INPUT_POINT_CODE') . " <br/>";
+                if(!isset($point_cadeau) && empty($point_cadeau)){
+                    $errors .= $this->Lang->get('CCADEAU__ERROR_INPUT_POINT_CODE')." <br/>";
                 }
-                if (isset($errors)) {
-                    $this->response->body(json_encode(array('statut' => false, 'msg' => "<br/>" . $errors)));
+                if(isset($errors))
+                {
+                    $this->response->body(json_encode(array('statut' => false, 'msg' => "<br/>".$errors)));
                     return;
-                } else {
+                }else{
                     $code = $this->Code->getCodeByCode($code_cadeau, 'code');
-                    if (isset($code)) {
+                    if(isset($code)){
                         $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('CCADEAU__ALREADY_EXIST'))));
                         return;
-                    } else {
+                    }else{
                         $this->Code->set(array(
                             'code' => $code_cadeau,
                             'point' => $point_cadeau,
@@ -89,53 +85,56 @@ class CodeController extends AppController
                     }
                 }
             }
-        } else
+        }
+        else
             throw new ForbiddenException();
     }
 
-    public function claim_code()
-    {
+    public function claim_code(){
         $this->layout = null;
         $this->autoRender = false;
-        if ($this->isConnected) {
-            if ($this->request->is('post')) {
+        if($this->isConnected){
+            if($this->request->is('post')) {
                 $code_cadeau = $this->request->data['code_cadeau'];
-                if (empty($code_cadeau)) {
+                if(empty($code_cadeau)){
                     $errors .= $this->Lang->get('CCADEAU__ERROR_INPUT_NAME_CODE');
                 }
-                if (isset($errors)) {
+                if(isset($errors))
+                {
                     $this->response->body(json_encode(array('statut' => false, 'msg' => $errors)));
                     return;
-                } else {
+                }else{
                     $this->loadModel('CodeCadeau.Code');
                     $this->loadModel('User');
                     $code = $this->Code->getCodeByCode($code_cadeau, 'code');
-                    if (empty($code)) {
+                    if(empty($code))
+                    {
                         $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('CCADEAU__NO_EXISTING'))));
                         return;
-                    } else {
+                    }else{
                         $id = $this->Code->getCodeByCode($code, 'id');
                         $point = $this->Code->getCodeByCode($code, 'point');
                         $use = $this->Code->getCodeByCode($code, 'use');
-                        if ($use == 1) {
+                        if($use == 1){
                             $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('CCADEAU__ALREADY_USE'))));
                             return;
-                        } else {
+                        }else{
                             $this->Code->read(null, $id);
                             $this->Code->set(array(
                                 'use' => '1',
-                                'utilisateur_id' => $this->Session->read('user'),
+                                'user_id' => $this->Session->read('user'),
                             ));
                             $this->Code->save();
                             $rs = $this->User->getKey('money') + $point;
                             $this->User->setToUser('money', $rs, $this->User->getKey('id'));
-                            $this->response->body(json_encode(array('statut' => true, 'msg' => $this->Lang->get('CCADEAU__SUCCESS_CLAIM_1') . " " . $point . " " . $this->Lang->get('CCADEAU__SUCCESS_CLAIM_2'))));
+                            $this->response->body(json_encode(array('statut' => true, 'msg' => $this->Lang->get('CCADEAU__SUCCESS_CLAIM_1')." ".$point." ".$this->Lang->get('CCADEAU__SUCCESS_CLAIM_2'))));
                             return;
                         }
                     }
                 }
             }
-        } else
+        }
+        else
             throw new ForbiddenException();
     }
 
@@ -143,16 +142,18 @@ class CodeController extends AppController
     {
         $this->layout = 'admin';
         $this->autoRender = false;
-        if ($this->isConnected && $this->User->isAdmin()) {
-            if (!empty($this->request->data)) {
-                if (!empty($this->request->data['id_cadeau_delete'])) {
+        if($this->isConnected && $this->User->isAdmin()){
+            if(!empty($this->request->data)){
+                if(!empty($this->request->data['id_cadeau_delete']))
+                {
                     $this->loadModel('CodeCadeau.Code');
                     $this->Code->delete($this->request->data['id_cadeau_delete']);
                     $this->response->body(json_encode(array('statut' => true, 'msg' => "Supprimé !")));
                     return;
                 }
             }
-        } else
+        }
+        else
             throw new ForbiddenException();
     }
 
